@@ -260,7 +260,12 @@ def create_app(config_name='default'):
     def favicon():
       return '', 204
 
+
+
 app = create_app('development')
+with app.app_context():
+    db.create_all()
+    print("✅ Tables created/verified on startup!")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
