@@ -256,16 +256,17 @@ def create_app(config_name='default'):
     logger.info("="*60)
     
     return app
-    @app.route('/favicon.ico')
-    def favicon():
-      return '', 204
-
-
-
+    
 app = create_app('development')
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
+
+# ✅ Create tables on startup
 with app.app_context():
     db.create_all()
-    print("✅ Tables created/verified on startup!")
+    print("✅ Tables created/verified!")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app = create_app('development')
+    app.run(host='127.0.0.1', port=5000, debug=True)
