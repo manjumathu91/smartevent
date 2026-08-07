@@ -29,14 +29,25 @@ def create_app(config_name='default'):
     cache.init_app(app)
     
     # ============ CORS - PROPER CONFIGURATION ============
-    CORS(app, 
-         origins=['http://localhost:5173', 'http://127.0.0.1:5173'],
-         supports_credentials=True,
-         allow_headers=['Content-Type', 'Authorization', 'X-Request-ID', 'Accept'],
-         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-         expose_headers=['Content-Type', 'Authorization'],
-         max_age=3600
-    )
+    
+    CORS(
+    app,
+    origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://smartevent-1.onrender.com"
+    ],
+    supports_credentials=True,
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "X-Request-ID",
+        "Accept"
+    ],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    expose_headers=["Content-Type", "Authorization"],
+    max_age=3600
+)
     # ====================================================
     
     # Register blueprints
