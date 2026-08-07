@@ -256,6 +256,9 @@ def create_app(config_name='default'):
     logger.info("="*60)
     
     return app
+    @app.route('/favicon.ico')
+    def favicon():
+      return '', 204
 
 app = create_app('development')
 
