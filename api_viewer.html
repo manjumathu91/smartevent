@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; background: #f4f4f9; }
+        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        button { background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 14px; }
+        button:hover { background: #4f46e5; }
+        pre { background: #1a1a2e; color: #4ade80; padding: 15px; border-radius: 8px; overflow: auto; max-height: 500px; font-size: 13px; white-space: pre-wrap; word-wrap: break-word; }
+        .error { color: #ef4444; }
+        .success { color: #4ade80; }
+        input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; width: 300px; }
+        .status { padding: 8px 15px; border-radius: 5px; display: inline-block; margin: 5px 0; }
+        .note { background: #fff3cd; padding: 10px; border-radius: 5px; margin: 10px 0; color: #856404; }
+        .test-buttons { display: flex; flex-wrap: wrap; gap: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🚀 API Viewer</h1>
+    
+    <div class="note">
+        💡 <strong>Tip:</strong> If you see CORS error, open this file with <strong>Live Server</strong> in VS Code!
+    </div>
+    
+    <div class="card">
+        <input type="text" id="urlInput" value="http://127.0.0.1:5000/" style="width: 70%;">
+        <button onclick="fetchURL()">Fetch</button>
+        <div class="test-buttons">
+            <button onclick="testRoot()">🏠 Root</button>
+            <button onclick="testHealth()">🏥 Health</button>
+            <button onclick="testEvents()">📅 Events</button>
+            <button onclick="testLogin()">🔑 Login</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Response:</h3>
+        <div id="statusMsg"></div>
+        <pre id="response">Click a button to fetch...</pre>
+    </div>
+
+    <script>
+        async function fetchURL() {
+            const url = document.getElementById('urlInput').value.trim();
+            const statusDiv = document.getElementById('statusMsg');
+            const responseDiv = document.getElementById('response');
+            
+            statusDiv.innerHTML = '⏳ Loading...';
+            responseDiv.textContent = 'Fetching...';
+            
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                
+                statusDiv.innerHTML = `<span class="success">✅ Status: ${res.status} ${res.statusText}</span>`;
+                
+                try {
+                    const data = JSON.parse(text);
+                    responseDiv.textContent = JSON.stringify(data, null, 2);
+                } catch {
+                    responseDiv.textContent = text;
+                }
+            } catch(e) {
+                statusDiv.innerHTML = `<span class="error">❌ ERROR: ${e.message}</span>`;
+                responseDiv.textContent = `Error: ${e.message}\n\nTroubleshooting:\n1. Open this file with VS Code Live Server\n2. Or disable CORS in browser (see below)\n3. Or use Chrome with CORS disabled`;
+            }
+        }
+
+        async function testRoot() {
+            document.getElementById('urlInput').value = 'http://127.0.0.1:5000/';
+            await fetchURL();
+        }
+
+        async function testHealth() {
+            document.getElementById('urlInput').value = 'http://127.0.0.1:5000/health';
+            await fetchURL();
+        }
+
+        async function testEvents() {
+            document.getElementById('urlInput').value = 'http://127.0.0.1:5000/api/events/';
+            await fetchURL();
+        }
+
+        async function testLogin() {
+            const url = 'http://127.0.0.1:5000/api/auth/login';
+            const statusDiv = document.getElementById('statusMsg');
+            const responseDiv = document.getElementById('response');
+            
+            statusDiv.innerHTML = '⏳ Logging in...';
+            
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        email: 'admin@eventhub.com',
+                        password: 'Admin@123'
+                    })
+                });
+                const data = await res.json();
+                statusDiv.innerHTML = `<span class="success">✅ Login Status: ${res.status}</span>`;
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+            } catch(e) {
+                statusDiv.innerHTML = `<span class="error">❌ ERROR: ${e.message}</span>`;
+                responseDiv.textContent = `Error: ${e.message}`;
+            }
+        }
+
+        // Auto fetch on page load
+        window.onload = function() {
+            setTimeout(testHealth, 500);
+        };
+    </script>
+</body>
+</html>
